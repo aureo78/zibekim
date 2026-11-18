@@ -28,33 +28,6 @@ const navigationItems = [
   { name: "Kalendorius", icon: CalendarDays },
 ];
 
-const announcements = [
-  {
-    title: "Artėja mokyklos talentų vakaras",
-    description:
-      "Kviečiame visus mokinius dalyvauti talentų vakare. Registracija vyksta iki penktadienio.",
-    category: "Renginiai",
-    date: "Šiandien",
-    color: "purple",
-  },
-  {
-    title: "Pasikeitė bibliotekos darbo laikas",
-    description:
-      "Nuo šios savaitės biblioteka darbo dienomis bus atidaryta iki 17:00.",
-    category: "Svarbu",
-    date: "Vakar",
-    color: "red",
-  },
-  {
-    title: "Mokinių tarybos susitikimas",
-    description:
-      "Kitas mokinių tarybos susitikimas vyks trečiadienį aktų salėje.",
-    category: "Mokinių taryba",
-    date: "Prieš 2 d.",
-    color: "blue",
-  },
-];
-
 const discussions = [
   {
     title: "Kokį festivalių formatą norėtumėte šių metų mokyklos renginyje?",
