@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
+import "./pixel-spaces.css";
 
 const navigationItems = [
   { name: "Pagrindinis", icon: LayoutDashboard },
@@ -142,6 +143,22 @@ const visualPages = {
   },
 };
 
+const pixelSpaces = [
+  { key: "Forumas", label: "Forumas", note: "Bendros diskusijos", art: "forum" },
+  { key: "Apklausos", label: "Apklausos", note: "Tavo nuomonė", art: "survey" },
+  { key: "Žinutės", label: "Žinutės", note: "Pokalbiai ir atsakymai", art: "chat" },
+  { key: "Skelbimai", label: "Naujienos", note: "Kas vyksta mokykloje", art: "news" },
+  { key: "Pranešti", label: "Pranešti", note: "Problema ir jos eiga", art: "report" },
+];
+
+function PixelArtIcon({ type }) {
+  if (type === "forum") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M9 13h58v38H52L42 65l-1-14H9z"/><path className="pixel-light" d="M17 21h42v23H17z"/><path className="pixel-dot" d="M26 32h5m9 0h5m9 0h5"/><path className="pixel-mid" d="M49 34h37v28H72l-8 10-1-10H49z"/><path className="pixel-line" d="M57 43h19m-19 7h13"/></svg>;
+  if (type === "survey") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M23 7h37l13 13v49H23z"/><path className="pixel-light" d="M30 14h27l9 9v38H30z"/><path className="pixel-mid" d="M36 37V27h6v10m6 0V21h6v16m6 0V14h6v23"/><path className="pixel-line" d="M36 48h5m7 0h17m-29 9h5m7 0h17"/></svg>;
+  if (type === "chat") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M8 20h62v43H8z"/><path className="pixel-light" d="M16 28h46v27H16z"/><path className="pixel-fold" d="M16 29l23 18 23-18M16 55l17-14m29 14L46 41"/><circle className="pixel-badge" cx="72" cy="18" r="14"/><path className="pixel-number" d="M70 11h5v15"/></svg>;
+  if (type === "news") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M6 11h84v55H6z"/><path className="pixel-light" d="M13 18h70v41H13z"/><text className="pixel-news" x="18" y="31">NEWS</text><path className="pixel-picture" d="M18 38h29v16H18z"/><path className="pixel-mountain" d="M20 52l8-8 6 5 6-7 6 10z"/><path className="pixel-line" d="M54 40h22m-22 7h17m-17 7h22"/></svg>;
+  return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M10 29h22l34-17v53L32 49H10z"/><path className="pixel-light" d="M17 35h17l26-13v33L34 44H17z"/><path className="pixel-handle" d="M26 50h12v23H26z"/><path className="pixel-ray" d="M75 28h14m-11 12h12m-15-23l9-7m-9 39l9 7"/></svg>;
+}
+
 function App() {
   const [activePage, setActivePage] = useState("Pagrindinis");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -254,6 +271,24 @@ function App() {
             <div className="topbar-avatar avatar avatar-pink">SU</div>
           </div>
         </header>
+
+        <div className="pixel-space-strip" aria-label="Zibekim veiklos sritys">
+          {pixelSpaces.map((space) => (
+            <button
+              key={space.label}
+              className={`pixel-space-card ${activePage === space.key ? "active" : ""}`}
+              onClick={() => {
+                setActivePage(space.key);
+                setSidebarOpen(false);
+              }}
+            >
+              <span className="pixel-space-number">0{pixelSpaces.indexOf(space) + 1}</span>
+              <PixelArtIcon type={space.art} />
+              <strong>{space.label}</strong>
+              <small>{space.note}</small>
+            </button>
+          ))}
+        </div>
 
         <div className="content">
           {activePage === "Pagrindinis" ? (

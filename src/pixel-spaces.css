@@ -1,0 +1,58 @@
+
+/* Pixel-art community spaces */
+.pixel-space-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 0;
+}
+
+.pixel-space-card {
+  position: relative;
+  min-height: 168px;
+  padding: 12px 14px 14px;
+  overflow: hidden;
+  text-align: left;
+  border: 2px solid #c8c6e6;
+  background: #ffffff;
+  color: #24233d;
+  box-shadow: 4px 4px 0 #e3e1f2;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.pixel-space-card:hover,
+.pixel-space-card.active {
+  transform: translate(-2px, -3px);
+  border-color: #595485;
+  box-shadow: 6px 7px 0 #d3d0ea;
+}
+
+.pixel-space-card.active { background: #f1effb; }
+.pixel-space-number { color: #7772ae; font: 600 10px "IBM Plex Mono", monospace; letter-spacing: .12em; }
+.pixel-space-card svg { width: 100%; height: 92px; margin: 4px 0 2px; shape-rendering: crispEdges; }
+.pixel-space-card strong { display: block; font-family: "Space Grotesk", sans-serif; font-size: 15px; }
+.pixel-space-card small { display: block; margin-top: 4px; color: #77768a; font-size: 10px; }
+.pixel-ink { fill: #181735; }
+.pixel-light { fill: #e0def4; }
+.pixel-mid { fill: #7772ae; }
+.pixel-dot { fill: none; stroke: #181735; stroke-width: 6; stroke-linecap: square; }
+.pixel-line { fill: none; stroke: #7772ae; stroke-width: 4; stroke-linecap: square; }
+.pixel-fold { fill: none; stroke: #181735; stroke-width: 5; }
+.pixel-badge { fill: #595485; stroke: #181735; stroke-width: 4; }
+.pixel-number { fill: none; stroke: white; stroke-width: 3; }
+.pixel-news { fill: #595485; font: 700 13px "IBM Plex Mono", monospace; }
+.pixel-picture { fill: #c9c6e8; stroke: #181735; stroke-width: 3; }
+.pixel-mountain { fill: #595485; }
+.pixel-handle { fill: #595485; stroke: #181735; stroke-width: 4; }
+.pixel-ray { fill: none; stroke: #595485; stroke-width: 5; stroke-linecap: square; }
+
+@media (max-width: 900px) {
+  .pixel-space-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .pixel-space-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .pixel-space-card { min-height: 150px; padding: 10px; }
+  .pixel-space-card svg { height: 76px; }
+  .pixel-space-card strong { font-size: 13px; }
+}
