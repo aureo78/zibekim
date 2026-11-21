@@ -93,3 +93,65 @@ body { background: var(--canvas); }
 @media(max-width:1120px){.action-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:780px){.sidebar{box-shadow:14px 0 32px rgba(0,0,0,.2)}.page-content{padding-top:24px}.hero-card{min-height:390px;padding:32px 26px}.hero-card h2{font-size:2.7rem}.hero-orbit{width:132px;height:132px;right:20px;bottom:24px;margin:0}.hero-orbit strong{font-size:25px}.dashboard-grid{margin-top:42px}}
 @media(max-width:480px){.action-grid{grid-template-columns:1fr}.action-card{min-height:132px}.hero-card{min-height:410px}.hero-card h2{font-size:2.45rem}.hero-orbit{right:16px;bottom:18px}.issue-card{padding:16px}.issue-body h3{white-space:normal}}
+
+/* Visual refinement: semantic civic palette, stronger secondary text, calmer states. */
+:root {
+  --color-ink: #142326;
+  --color-muted: #52686b;
+  --color-brand: #087f7b;
+  --color-brand-dark: #064d50;
+  --color-accent: #f4c95d;
+  --color-surface: #ffffff;
+  --color-canvas: #eef4f2;
+  --color-subtle: #dff2ef;
+  --color-line: rgba(20, 35, 38, .15);
+  --shadow-soft: 0 16px 36px rgba(20, 48, 51, .08);
+}
+
+body { color: var(--color-ink); background: var(--color-canvas); }
+button, input { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.topbar { background: rgba(255, 255, 255, .9); }
+.search { color: var(--color-muted); background: var(--color-surface); }
+.search input::placeholder { color: #52686b; }
+.notification { color: var(--color-brand-dark); }
+
+.action-card, .issue-card, .timeline-card, .updates-card {
+  border-color: var(--color-line);
+}
+.action-card:hover, .issue-card:hover {
+  border-color: rgba(8, 127, 123, .5);
+}
+.action-card:active { transform: translateY(0); }
+.action-card > svg { color: var(--color-muted); }
+
+/* Small metadata needs to remain readable, not merely decorative. */
+.issue-meta,
+.status,
+.timeline-step small,
+.update-row small { color: var(--color-muted); }
+.filter-tabs button { color: #52686b; }
+.type-label.coral { color: #a6463b; }
+.type-label.lavender,
+.status.purple { color: var(--color-brand-dark); }
+.status.blue { color: #356b7e; }
+.status.amber { color: #805b16; }
+.issue-body p { color: var(--color-muted); }
+.issue-body p span { color: #789092; }
+
+.timeline-step:not(:last-child)::after { background: #b8cfcc; }
+.timeline-step > span { color: #607476; }
+.outline-button { color: var(--color-brand-dark); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
