@@ -1,519 +1,116 @@
 import {
+  ArrowUpRight,
   Bell,
-  CalendarDays,
-  ChevronDown,
-  ClipboardList,
+  BookOpen,
+  Check,
+  ChevronRight,
+  CircleHelp,
+  FileText,
+  Flag,
   Home,
-  LayoutDashboard,
+  Lightbulb,
   Menu,
-  MessageCircle,
-  MoreHorizontal,
-  Newspaper,
-  Plus,
   Search,
-  Settings,
+  ShieldCheck,
+  Sparkles,
   Users,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
-import "./pixel-spaces.css";
 
-const navigationItems = [
-  { name: "Pagrindinis", icon: LayoutDashboard },
-  { name: "Žinutės", icon: MessageCircle },
-  { name: "Grupės", icon: Users },
-  { name: "Forumas", icon: Home },
-  { name: "Apklausos", icon: ClipboardList },
-  { name: "Skelbimai", icon: Newspaper },
-  { name: "Kalendorius", icon: CalendarDays },
+const navItems = [
+  { label: "Apžvalga", icon: Home },
+  { label: "Problemos", icon: Flag, count: 12 },
+  { label: "Idėjos", icon: Lightbulb },
+  { label: "Dalyvauk", icon: Users },
+  { label: "Mokyklos naujienos", icon: BookOpen },
 ];
 
-const discussions = [
-  {
-    title: "Kokį festivalių formatą norėtumėte šių metų mokyklos renginyje?",
-    category: "Idėjos mokyklai",
-    replies: 24,
-    views: 142,
-    author: "Emilija K.",
-    avatar: "EK",
-    lastReply: "Agnė: Vis dėlto geriau būtų įtraukti daugiau studentų projektuose.",
-    tags: ["Renginiai", "Balsavimas"],
-  },
-  {
-    title: "Kaip pagerinti mokyklos erdves po pamokų?",
-    category: "Bendruomenė",
-    replies: 18,
-    views: 96,
-    author: "Matas J.",
-    avatar: "MJ",
-    lastReply: "Rokas: Muzikos zona ir daugiau oazės kampelių būtų puikiai.",
-    tags: ["Erdvės", "Idėjos"],
-  },
-  {
-    title: "Ar reikėtų daugiau popamokinių veiklų su dėstytojais?",
-    category: "Diskusijos",
-    replies: 31,
-    views: 218,
-    author: "Gabija P.",
-    avatar: "GP",
-    lastReply: "Kornelija: Manau, reikia daugiau praktinių ir kūrybinių užsiėmimų.",
-    tags: ["Veikla", "Klasė"],
-  },
-  {
-    title: "Ką daryti su neformalaus bendravimo erdvėmis tarp klasių?",
-    category: "Bendruomenė",
-    replies: 12,
-    views: 74,
-    author: "Tadas R.",
-    avatar: "TR",
-    lastReply: "Ieva: Būtų puiku turėti bendrus projektus ir bendras darbo zonas.",
-    tags: ["Praktika", "Kita"],
-  },
-  {
-    title: "Kurios pamokų temos būtų labiausiai įdomios žmogui be ai?",
-    category: "Mokymas",
-    replies: 46,
-    views: 301,
-    author: "Darius L.",
-    avatar: "DL",
-    lastReply: "Lina: Vaizdiniai projektai ir diskusijos visada sužadina daugiau.",
-    tags: ["Mokytojai", "Pamokos"],
-  },
-  {
-    title: "Ar verta įvesti klasės iškilmes ir tradicijas?",
-    category: "Tradicijos",
-    replies: 9,
-    views: 58,
-    author: "Urtė N.",
-    avatar: "UN",
-    lastReply: "Jonas: Teigtų, kad tai padėtų stiprinti bendruomeniškumą.",
-    tags: ["Renginiai", "Bendruomė"],
-  },
+const actions = [
+  { label: "Pranešti apie problemą", description: "Pasakyk, kas trukdo mokyklos gyvenimui.", icon: Flag, tone: "coral" },
+  { label: "Pasiūlyti idėją", description: "Paversk gerą mintį pokyčiu.", icon: Lightbulb, tone: "lavender" },
+  { label: "Dalyvauti", description: "Balsuok, atsakyk ir prisidėk.", icon: Users, tone: "mint" },
+  { label: "Gauti pagalbą", description: "Saugus kelias jautriems rūpesčiams.", icon: ShieldCheck, tone: "sand" },
 ];
 
-const visualPages = {
-  "Žinutės": {
-    summary: "Vidinis bendravimas, svarbios žinutės ir laukiami atsakymai.",
-    cards: [
-      { title: "Šiandienos pranešimai", value: "14", note: "nauji" },
-      { title: "Laukia atsakymo", value: "7", note: "klausimai" },
-      { title: "Peržiūrėti", value: "31", note: "įrašai" },
-    ],
-  },
-  Grupės: {
-    summary: "Mokinių grupės, projektai ir bendradarbiavimo kanalai.",
-    cards: [
-      { title: "Aktyvios grupės", value: "8", note: "aktyvios" },
-      { title: "Projektai", value: "5", note: "veiklių" },
-      { title: "Nariai", value: "184", note: "mokiniai" },
-    ],
-  },
-  Forumas: {
-    summary: "Diskusijų lenta su idėjomis, patarimais ir mokyklos aktualijomis.",
-    cards: [
-      { title: "Temos", value: "26", note: "atvirų" },
-      { title: "Atsakymai", value: "142", note: "šią savaitę" },
-      { title: "Populiariausia", value: "9", note: "įrašai" },
-    ],
-  },
-  Apklausos: {
-    summary: "Nuomonės, balsavimai ir išankstinės atrankos bei renginių planai.",
-    cards: [
-      { title: "Aktyvios apklausos", value: "3", note: "vyksta" },
-      { title: "Balsai", value: "482", note: "iš viso" },
-      { title: "Laukia atsakymo", value: "2", note: "dar" },
-    ],
-  },
-  Skelbimai: {
-    summary: "Svarbiausia informacija, organizaciniai pranešimai ir taisyklės.",
-    cards: [
-      { title: "Nauji skelbimai", value: "11", note: "šiandien" },
-      { title: "Archyvas", value: "42", note: "pranešimai" },
-      { title: "Svarbūs", value: "6", note: "įrašai" },
-    ],
-  },
-  Kalendorius: {
-    summary: "Renginių ir susitikimų laikas, datos ir organizaciniai žymenys.",
-    cards: [
-      { title: "Artimiausi", value: "5", note: "renginiai" },
-      { title: "Susitikimai", value: "9", note: "darbai" },
-      { title: "Užrašai", value: "13", note: "įrašų" },
-    ],
-  },
-};
-
-const pixelSpaces = [
-  { key: "Forumas", label: "Forumas", note: "Bendros diskusijos", art: "forum" },
-  { key: "Apklausos", label: "Apklausos", note: "Tavo nuomonė", art: "survey" },
-  { key: "Žinutės", label: "Žinutės", note: "Pokalbiai ir atsakymai", art: "chat" },
-  { key: "Skelbimai", label: "Naujienos", note: "Kas vyksta mokykloje", art: "news" },
-  { key: "Pranešti", label: "Pranešti", note: "Problema ir jos eiga", art: "report" },
+const initialItems = [
+  { id: 1, type: "Problema", tone: "coral", title: "Šaltos klasės antrame aukšte", detail: "3 aukštas · 18 palaiko", status: "Nagrinėjama", statusTone: "amber", author: "Anoniminis", time: "prieš 2 val.", votes: 18 },
+  { id: 2, type: "Idėja", tone: "lavender", title: "Daugiau ramių vietų pertraukų metu", detail: "Bendruomenė · 42 palaiko", status: "Balsuojama", statusTone: "purple", author: "Emilija K.", time: "prieš 5 val.", votes: 42 },
+  { id: 3, type: "Problema", tone: "coral", title: "Neveikia vandens fontanėlis prie sporto salės", detail: "Sporto salė · 27 palaiko", status: "Priskirta", statusTone: "blue", author: "Matas J.", time: "vakar", votes: 27 },
 ];
 
-function PixelArtIcon({ type }) {
-  if (type === "forum") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M9 13h58v38H52L42 65l-1-14H9z"/><path className="pixel-light" d="M17 21h42v23H17z"/><path className="pixel-dot" d="M26 32h5m9 0h5m9 0h5"/><path className="pixel-mid" d="M49 34h37v28H72l-8 10-1-10H49z"/><path className="pixel-line" d="M57 43h19m-19 7h13"/></svg>;
-  if (type === "survey") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M23 7h37l13 13v49H23z"/><path className="pixel-light" d="M30 14h27l9 9v38H30z"/><path className="pixel-mid" d="M36 37V27h6v10m6 0V21h6v16m6 0V14h6v23"/><path className="pixel-line" d="M36 48h5m7 0h17m-29 9h5m7 0h17"/></svg>;
-  if (type === "chat") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M8 20h62v43H8z"/><path className="pixel-light" d="M16 28h46v27H16z"/><path className="pixel-fold" d="M16 29l23 18 23-18M16 55l17-14m29 14L46 41"/><circle className="pixel-badge" cx="72" cy="18" r="14"/><path className="pixel-number" d="M70 11h5v15"/></svg>;
-  if (type === "news") return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M6 11h84v55H6z"/><path className="pixel-light" d="M13 18h70v41H13z"/><text className="pixel-news" x="18" y="31">NEWS</text><path className="pixel-picture" d="M18 38h29v16H18z"/><path className="pixel-mountain" d="M20 52l8-8 6 5 6-7 6 10z"/><path className="pixel-line" d="M54 40h22m-22 7h17m-17 7h22"/></svg>;
-  return <svg viewBox="0 0 96 76" aria-hidden="true"><path className="pixel-ink" d="M10 29h22l34-17v53L32 49H10z"/><path className="pixel-light" d="M17 35h17l26-13v33L34 44H17z"/><path className="pixel-handle" d="M26 50h12v23H26z"/><path className="pixel-ray" d="M75 28h14m-11 12h12m-15-23l9-7m-9 39l9 7"/></svg>;
-}
+const updates = [
+  { date: "12", month: "BAL", title: "Mokinių tarybos susitikimas", note: "Atvira visiems norintiems" },
+  { date: "16", month: "BAL", title: "Bibliotekos erdvės apklausa", note: "Tavo nuomonė iki penktadienio" },
+];
 
 function App() {
-  const [activePage, setActivePage] = useState("Pagrindinis");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const detail = visualPages[activePage] ?? visualPages["Žinutės"];
+  const [active, setActive] = useState("Apžvalga");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("Visi");
+  const [items, setItems] = useState(initialItems);
+  const [toast, setToast] = useState("");
+
+  const visibleItems = useMemo(() => items.filter((item) => {
+    const matchesFilter = filter === "Visi" || item.type === filter;
+    const query = search.toLowerCase();
+    return matchesFilter && (!query || `${item.title} ${item.detail}`.toLowerCase().includes(query));
+  }), [filter, items, search]);
+
+  const chooseAction = (label) => {
+    setToast(label === "Gauti pagalbą" ? "Privatus pagalbos kelias ruošiamas saugiai." : `${label} forma bus atidaryta kitame žingsnyje.`);
+    window.setTimeout(() => setToast(""), 2800);
+  };
+
+  const vote = (id) => setItems((current) => current.map((item) => item.id === id ? { ...item, votes: item.votes + 1 } : item));
 
   return (
-    <div className="app">
-      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
-        <div className="logo-wrapper">
-          <div className="logo-mark">Ž</div>
-          <div>
-            <h1>Žibėkim</h1>
-            <span>Mokyklos bendruomenė</span>
-          </div>
-
-          <button
-            className="close-menu"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
+    <div className="app-shell">
+      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
+        <div className="brand-row">
+          <div className="brand-mark">Ž</div>
+          <div><strong>žibėkim</strong><span>Mokyklos balsas</span></div>
+          <button className="close-button" onClick={() => setMenuOpen(false)} aria-label="Uždaryti meniu"><X size={20} /></button>
         </div>
-
-        <div className="school-selector">
-          <div className="school-icon">S</div>
-          <div>
-            <strong>Sun mokykla</strong>
-            <span>2025–2026 m.</span>
-          </div>
-          <ChevronDown size={17} />
-        </div>
-
-        <nav className="navigation">
-          <span className="nav-label">MENIU</span>
-
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activePage === item.name;
-
-            return (
-              <button
-                key={item.name}
-                className={`nav-item ${isActive ? "active" : ""}`}
-                onClick={() => {
-                  setActivePage(item.name);
-                  setSidebarOpen(false);
-                }}
-              >
-                <Icon size={19} />
-                <span>{item.name}</span>
-
-                {item.name === "Žinutės" && (
-                  <span className="notification-count">4</span>
-                )}
-              </button>
-            );
-          })}
-
-          <span className="nav-label bottom-label">SISTEMA</span>
-
-          <button className="nav-item">
-            <Settings size={19} />
-            <span>Nustatymai</span>
-          </button>
+        <div className="school-switcher"><div className="school-symbol">S</div><div><strong>Sun mokykla</strong><span>2025–2026 m.</span></div><ChevronRight size={16} /></div>
+        <nav className="side-nav" aria-label="Pagrindinis meniu">
+          <span className="eyebrow">Tavo erdvė</span>
+          {navItems.map(({ label, icon: Icon, count }) => <button key={label} className={`nav-link ${active === label ? "active" : ""}`} onClick={() => { setActive(label); setMenuOpen(false); }}><Icon size={18} /><span>{label}</span>{count && <b>{count}</b>}</button>)}
+          <span className="eyebrow lower">Saugumas</span>
+          <button className="nav-link help-link" onClick={() => chooseAction("Gauti pagalbą")}><CircleHelp size={18} /><span>Privati pagalba</span></button>
         </nav>
-
-        <div className="sidebar-profile">
-          <div className="avatar avatar-pink">SU</div>
-          <div className="profile-info">
-            <strong>Sun K.</strong>
-            <span>III B klasė</span>
-          </div>
-          <MoreHorizontal size={19} />
-        </div>
+        <div className="sidebar-footer"><div className="avatar">SK</div><div><strong>Sun K.</strong><span>III B klasė</span></div><button aria-label="Pranešimai"><Bell size={17} /></button></div>
       </aside>
 
-      {sidebarOpen && (
-        <div
-          className="mobile-overlay"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
+      {menuOpen && <button className="backdrop" onClick={() => setMenuOpen(false)} aria-label="Uždaryti meniu" />}
       <main className="main-content">
         <header className="topbar">
-          <button
-            className="mobile-menu-button"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu size={22} />
-          </button>
-
-          <div className="page-heading">
-            <span className="breadcrumb">Žibėkim /</span>
-            <h2>{activePage}</h2>
-          </div>
-
-          <div className="topbar-actions">
-            <div className="search-box">
-              <Search size={18} />
-              <input placeholder="Ieškoti..." />
-              <span>⌘ K</span>
-            </div>
-
-            <button className="icon-button notification-button">
-              <Bell size={20} />
-              <i />
-            </button>
-
-            <div className="topbar-avatar avatar avatar-pink">SU</div>
-          </div>
+          <button className="mobile-menu" onClick={() => setMenuOpen(true)} aria-label="Atidaryti meniu"><Menu size={22} /></button>
+          <div><span className="breadcrumb">Žibėkim /</span><h1>{active}</h1></div>
+          <div className="topbar-tools"><label className="search"><Search size={17} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Ieškoti idėjų..." /></label><button className="notification" aria-label="Pranešimai"><Bell size={19} /><i /></button><div className="avatar">SK</div></div>
         </header>
 
-        <div className="pixel-space-strip" aria-label="Zibekim veiklos sritys">
-          {pixelSpaces.map((space) => (
-            <button
-              key={space.label}
-              className={`pixel-space-card ${activePage === space.key ? "active" : ""}`}
-              onClick={() => {
-                setActivePage(space.key);
-                setSidebarOpen(false);
-              }}
-            >
-              <span className="pixel-space-number">0{pixelSpaces.indexOf(space) + 1}</span>
-              <PixelArtIcon type={space.art} />
-              <strong>{space.label}</strong>
-              <small>{space.note}</small>
-            </button>
-          ))}
-        </div>
+        <div className="page-content">
+          <section className="hero-card">
+            <div className="hero-copy"><span className="eyebrow">PIRMADIENIS, BALANDŽIO 8</span><h2>Maži balsai.<br /><em>Matomi pokyčiai.</em></h2><p>Čia gali saugiai pasakyti, kas svarbu, ir matyti, kas vyksta toliau.</p><div className="hero-trust"><ShieldCheck size={17} /><span>Aiškus atsakymas. Matomas progresas. Tavo mokykla.</span></div></div>
+            <div className="hero-orbit"><Sparkles size={34} /><span>Šiandien<br /><strong>24</strong> mokiniai dalyvauja</span></div>
+          </section>
 
-        <div className="content">
-          {activePage === "Pagrindinis" ? (
-            <>
-              <section className="welcome-section forum-header">
-                <div>
-                  <p className="small-date">FORUMAS / BENDRUOMENĖ</p>
-                  <h1>
-                    Sun forum <span>💬</span>
-                  </h1>
-                  <p className="welcome-text">
-                    Diskusijos, idėjos ir mokyklos pokalbiai – viskas vienoje lentelėje.
-                  </p>
-                </div>
+          <section className="action-grid" aria-label="Ką nori padaryti?"><div className="section-intro"><span className="eyebrow">NUO KO PRADĖSIME?</span><h2>Ką nori padaryti?</h2><p>Pasirink vieną kelią. Mes padėsime žengti kitą žingsnį.</p></div>{actions.map(({ label, description, icon: Icon, tone }) => <button key={label} className={`action-card ${tone}`} onClick={() => chooseAction(label)}><span className="action-icon"><Icon size={22} /></span><span><strong>{label}</strong><small>{description}</small></span><ArrowUpRight size={18} /></button>)}</section>
 
-                <div className="forum-header-actions">
-                  <button className="primary-button">
-                    <Plus size={18} />
-                    Nauja tema
-                  </button>
-                </div>
-              </section>
-
-              <section className="forum-overview">
-                <div className="forum-category-card hot">
-                  <span>Karštos temos</span>
-                  <strong>12</strong>
-                  <small>aktyvios šiandien</small>
-                </div>
-                <div className="forum-category-card">
-                  <span>Debatai</span>
-                  <strong>38</strong>
-                  <small>laukia jūsų</small>
-                </div>
-                <div className="forum-category-card">
-                  <span>Renginiai</span>
-                  <strong>9</strong>
-                  <small>naujų įrašų</small>
-                </div>
-                <div className="forum-category-card">
-                  <span>Mentoriai</span>
-                  <strong>6</strong>
-                  <small>aktyvūs</small>
-                </div>
-              </section>
-
-              <section className="dashboard-grid forum-grid">
-                <div className="dashboard-main-column">
-                  <div className="section-header forum-toolbar">
-                    <div>
-                      <h3>Visos temos</h3>
-                      <p>Šiuo metu aktyvios diskusijos</p>
-                    </div>
-                    <div className="forum-toolbar-actions">
-                      <button className="chip active">Populiariausios</button>
-                      <button className="chip">Naujausios</button>
-                    </div>
-                  </div>
-
-                  <div className="discussion-list forum-list">
-                    {discussions.map((discussion) => (
-                      <article className="discussion-card forum-thread" key={discussion.title}>
-                        <div className="avatar avatar-blue">{discussion.avatar}</div>
-
-                        <div className="discussion-content">
-                          <div className="discussion-top">
-                            <span className="discussion-category">
-                              {discussion.category}
-                            </span>
-                            <span className="discussion-time">Prieš 2 val.</span>
-                          </div>
-
-                          <h4>{discussion.title}</h4>
-
-                          <div className="forum-tags">
-                            {discussion.tags.map((tag) => (
-                              <span key={`${discussion.title}-${tag}`} className="tag">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-
-                          <div className="discussion-meta">
-                            <span>{discussion.author}</span>
-                            <span>·</span>
-                            <span>{discussion.replies} atsakymai</span>
-                            <span>·</span>
-                            <span>{discussion.views} peržiūros</span>
-                          </div>
-
-                          <div className="thread-reply">
-                            {discussion.lastReply}
-                          </div>
-                        </div>
-
-                        <div className="forum-side-stats">
-                          <strong>{discussion.replies}</strong>
-                          <span>ats.</span>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-
-                <aside className="dashboard-side-column">
-                  <div className="section-header">
-                    <div>
-                      <h3>Forumų temos</h3>
-                      <p>Tematinės kategorijos</p>
-                    </div>
-                  </div>
-
-                  <div className="forum-sidebar-box">
-                    <div className="sidebar-topic">
-                      <span className="topic-dot red" />
-                      Mokyklos gyvenimas
-                    </div>
-                    <div className="sidebar-topic">
-                      <span className="topic-dot orange" />
-                      Renginiai
-                    </div>
-                    <div className="sidebar-topic">
-                      <span className="topic-dot purple" />
-                      Idėjos ir projektai
-                    </div>
-                    <div className="sidebar-topic">
-                      <span className="topic-dot blue" />
-                      Organizacija
-                    </div>
-                    <div className="sidebar-topic">
-                      <span className="topic-dot gold" />
-                      Mentoriai
-                    </div>
-                  </div>
-
-                  <div className="poll-card">
-                    <div className="poll-card-heading">
-                      <div className="poll-icon">
-                        <ClipboardList size={20} />
-                      </div>
-                      <span>AKTYVI APKLAUSA</span>
-                    </div>
-
-                    <h3>Kokio renginio norėtum šiais metais?</h3>
-                    <p>Tavo nuomonė padės mums planuoti kitus mokyklos renginius.</p>
-
-                    <div className="poll-option">
-                      <span>🎵 Muzikos festivalis</span>
-                      <strong>42%</strong>
-                    </div>
-
-                    <div className="poll-option">
-                      <span>🎨 Kūrybinės dirbtuvės</span>
-                      <strong>28%</strong>
-                    </div>
-
-                    <div className="poll-option">
-                      <span>🏆 Sporto turnyras</span>
-                      <strong>30%</strong>
-                    </div>
-
-                    <button className="poll-button">Atsakyti į apklausą</button>
-                  </div>
-                </aside>
-              </section>
-            </>
-          ) : (
-            <section className="mock-page-shell">
-              <div className="mock-page-header">
-                <p className="small-date">{activePage.toUpperCase()}</p>
-                <h1>{activePage}</h1>
-                <p className="welcome-text">{detail.summary}</p>
-              </div>
-
-              <div className="mock-page-grid">
-                {detail.cards.map((card) => (
-                  <article className="mock-page-card" key={card.title}>
-                    <span>{card.title}</span>
-                    <strong>{card.value}</strong>
-                    <small>{card.note}</small>
-                  </article>
-                ))}
-              </div>
-
-              <div className="mock-page-list">
-                <div className="section-header">
-                  <div>
-                    <h3>Šiuo metu matoma</h3>
-                    <p>Visualinis puslapio vaizdas</p>
-                  </div>
-                </div>
-
-                <div className="discussion-list">
-                  {discussions.slice(0, 2).map((discussion) => (
-                    <article className="discussion-card" key={`${activePage}-${discussion.title}`}>
-                      <div className="avatar avatar-blue">{discussion.avatar}</div>
-
-                      <div className="discussion-content">
-                        <div className="discussion-top">
-                          <span className="discussion-category">
-                            {discussion.category}
-                          </span>
-                          <span className="discussion-time">Prieš 2 val.</span>
-                        </div>
-
-                        <h4>{discussion.title}</h4>
-
-                        <div className="discussion-meta">
-                          <span>{discussion.author}</span>
-                          <span>·</span>
-                          <span>{discussion.replies} atsakymai</span>
-                          <span>·</span>
-                          <span>{discussion.views} peržiūros</span>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
+          <section className="dashboard-grid">
+            <div className="feed-column"><div className="section-heading"><div><span className="eyebrow">BENDRUOMENĖS PULSAS</span><h2>Naujausia veikla</h2></div><div className="filter-tabs">{["Visi", "Problema", "Idėja"].map((option) => <button key={option} className={filter === option ? "selected" : ""} onClick={() => setFilter(option)}>{option}</button>)}</div></div><div className="issue-list">{visibleItems.map((item) => <article className="issue-card" key={item.id}><div className={`issue-symbol ${item.tone}`}>{item.type === "Idėja" ? <Lightbulb size={19} /> : <Flag size={19} />}</div><div className="issue-body"><div className="issue-meta"><span className={`type-label ${item.tone}`}>{item.type}</span><span>{item.time}</span></div><h3>{item.title}</h3><p>{item.detail} <span>·</span> {item.author}</p><div className="issue-progress"><span style={{ width: `${Math.min(86, item.votes + 24)}%` }} /></div></div><div className="issue-side"><span className={`status ${item.statusTone}`}><span />{item.status}</span><button className="vote-button" onClick={() => vote(item.id)}><ArrowUpRight size={14} />{item.votes}</button></div></article>)}{visibleItems.length === 0 && <div className="empty-state">Nerasta atitinkančių įrašų. Pabandyk kitą paiešką.</div>}</div><button className="outline-button" onClick={() => setActive("Problemos")}>Peržiūrėti visą veiklą <ChevronRight size={16} /></button></div>
+            <aside className="right-column"><div className="section-heading compact"><div><span className="eyebrow">MOKYKLOS ATSAKAS</span><h2>Kas vyksta toliau?</h2></div><FileText size={20} /></div><div className="timeline-card"><div className="timeline-step done"><span><Check size={14} /></span><div><strong>Tu pasakei</strong><small>Problema ar idėja pateikta</small></div></div><div className="timeline-step active"><span>2</span><div><strong>Mokykla išgirdo</strong><small>Peržiūrima ir priskiriama komandai</small></div></div><div className="timeline-step"><span>3</span><div><strong>Matomas veiksmas</strong><small>Gausi atnaujinimą apie rezultatą</small></div></div></div><div className="updates-card"><div className="section-heading compact"><div><span className="eyebrow">ARTĖJA</span><h2>Mokyklos gyvenimas</h2></div><CalendarIcon /></div>{updates.map((update) => <div className="update-row" key={update.title}><div className="date-box"><strong>{update.date}</strong><span>{update.month}</span></div><div><strong>{update.title}</strong><small>{update.note}</small></div></div>)}</div></aside>
+          </section>
         </div>
       </main>
+      {toast && <div className="toast"><Check size={17} />{toast}</div>}
     </div>
   );
 }
+
+function CalendarIcon() { return <div className="mini-calendar"><span>APR</span><strong>08</strong></div>; }
 
 export default App;
